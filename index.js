@@ -25,6 +25,7 @@ async function run() {
     const activeUsersCollection = client
       .db("gardenNestDB")
       .collection("activeUsers");
+    const tipsCollection = client.db("gardenNestDB").collection("shareTips");
 
     app.get("/users", async (req, res) => {
       const result = await activeUsersCollection.find().toArray();
@@ -38,6 +39,14 @@ async function run() {
         .toArray();
       res.send(result);
     });
+
+    app.post("/tips", async (req, res) => {
+      const newUser = req.body;
+      const result = await tipsCollection.insertOne(newUser);
+      res.send(result);
+    });
+
+
   } finally {
   }
 }
