@@ -42,7 +42,7 @@ async function run() {
 
     app.get("/trendingTips", async (req, res) => {
       const result = await tipsCollection.find().limit(6).toArray();
-      res.send(result)
+      res.send(result);
     });
 
     app.post("/tips", async (req, res) => {
@@ -67,6 +67,13 @@ async function run() {
       const result = await tipsCollection.findOne(query);
       res.send(result);
     });
+
+    app.post("/myTips", async (req, res) => {
+      const { email } = req.body;
+      const result = await tipsCollection.find({ email: email }).toArray();
+      res.send(result);
+    });
+    
   } finally {
   }
 }
