@@ -46,7 +46,10 @@ async function run() {
       res.send(result);
     });
 
-
+    app.get("/tips", async (req, res) => {
+      const result = await tipsCollection.find().toArray();
+      res.send(result);
+    });
   } finally {
   }
 }
