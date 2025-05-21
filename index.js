@@ -50,6 +50,11 @@ async function run() {
       const result = await tipsCollection.find().toArray();
       res.send(result);
     });
+
+    app.get("/browseTips", async (req, res) => {
+      const result = await tipsCollection.find({ status: "Public" }).toArray();
+      res.send(result);
+    });
   } finally {
   }
 }
