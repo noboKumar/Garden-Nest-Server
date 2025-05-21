@@ -41,7 +41,7 @@ async function run() {
     });
 
     app.get("/trendingTips", async (req, res) => {
-      const result = await tipsCollection.find().limit(6).toArray();
+      const result = await tipsCollection.find({ status: "Public" }).limit(6).toArray();
       res.send(result);
     });
 
@@ -73,7 +73,13 @@ async function run() {
       const result = await tipsCollection.find({ email: email }).toArray();
       res.send(result);
     });
-    
+
+    app.delete("/tips/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await tipsCollection.deleteOne(query);
+      res.send(result)
+    });
   } finally {
   }
 }
