@@ -40,6 +40,11 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/trendingTips", async (req, res) => {
+      const result = await tipsCollection.find().limit(6).toArray();
+      res.send(result)
+    });
+
     app.post("/tips", async (req, res) => {
       const newUser = req.body;
       const result = await tipsCollection.insertOne(newUser);
