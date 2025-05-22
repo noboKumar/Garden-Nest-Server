@@ -94,6 +94,12 @@ async function run() {
       const result = await tipsCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
+
+    app.get("/tips/:level", async (req, res) => {
+      const levelData = req.params.level;
+      const result = await tipsCollection.find({ level: levelData, status: "Public" }).toArray();
+      res.send(result);
+    });
   } finally {
   }
 }
