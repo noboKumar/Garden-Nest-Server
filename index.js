@@ -41,7 +41,10 @@ async function run() {
     });
 
     app.get("/trendingTips", async (req, res) => {
-      const result = await tipsCollection.find({ status: "Public" }).limit(6).toArray();
+      const result = await tipsCollection
+        .find({ status: "Public" })
+        .limit(6)
+        .toArray();
       res.send(result);
     });
 
@@ -78,7 +81,18 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await tipsCollection.deleteOne(query);
-      res.send(result)
+      res.send(result);
+    });
+
+    app.put("/tips/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateTips = req.body;
+      const updateDoc = {
+        $set: updateTips,
+      };
+      const result = await tipsCollection.updateOne(filter, updateDoc);
+      res.send(result);
     });
   } finally {
   }
