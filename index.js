@@ -97,7 +97,20 @@ async function run() {
 
     app.get("/tips/:level", async (req, res) => {
       const levelData = req.params.level;
-      const result = await tipsCollection.find({ level: levelData, status: "Public" }).toArray();
+      const result = await tipsCollection
+        .find({ level: levelData, status: "Public" })
+        .toArray();
+      res.send(result);
+    });
+
+    app.patch("/tips/:id/like", async (req, res) => {
+      const { email } = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $addToSet: { likedBy: email },
+      };
+      const result = await tipsCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
   } finally {
