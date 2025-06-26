@@ -32,6 +32,14 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: id };
+      const result = await activeUsersCollection.findOne(query)
+      res.send(result);
+      console.log(typeof id, typeof query);
+    });
+
     app.get("/activeUsers", async (req, res) => {
       const result = await activeUsersCollection
         .find({ status: "Active" })
