@@ -50,8 +50,16 @@ async function run() {
 
     app.get("/trendingTips", async (req, res) => {
       const result = await tipsCollection
-        .find({ status: "Public" })
-        .limit(6)
+        .aggregate([
+          { $match: { status: "Public" } },
+          {
+            $addFields: {
+              likesCount: { $size: { $ifNull: ["$likedBy", []] } },
+            },
+          },
+          { $sort: { likesCount: -1 } },
+          { $limit: 6 },
+        ])
         .toArray();
       res.send(result);
     });
