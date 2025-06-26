@@ -35,9 +35,9 @@ async function run() {
     app.get("/users/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: id };
-      const result = await activeUsersCollection.findOne(query)
+      const result = await activeUsersCollection.findOne(query);
       res.send(result);
-      console.log(typeof id, typeof query);
+      console.log(result);
     });
 
     app.get("/activeUsers", async (req, res) => {
@@ -120,6 +120,31 @@ async function run() {
       };
       const result = await tipsCollection.updateOne(filter, updateDoc);
       res.send(result);
+    });
+
+    app.post("/myMostLikedTip", async (req, res) => {
+      const { email } = req.body;
+      try {
+        const result = await tipsCollection
+          .aggregate([
+            { $match: { email } },
+            {
+              $addFields: {
+                likesCount: { $size: { $ifNull: ["$likedBy", []] } },
+              },
+            },
+            { $sort: { likesCount: -1 } },
+            { $limit: 1 },
+          ])
+          .toArray();
+        if (result.length > 0) {
+          res.send(result[0]);
+        } else {
+          res.send(null);
+        }
+      } catch (error) {
+        res.status(500).send({ error: "Failed to fetch most liked tip." });
+      }
     });
   } finally {
   }
