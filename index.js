@@ -132,27 +132,34 @@ async function run() {
 
     app.post("/myMostLikedTip", async (req, res) => {
       const { email } = req.body;
-      try {
-        const result = await tipsCollection
-          .aggregate([
-            { $match: { email } },
-            {
-              $addFields: {
-                likesCount: { $size: { $ifNull: ["$likedBy", []] } },
-              },
+      const result = await tipsCollection
+        .aggregate([
+          { $match: { email } },
+          {
+            $addFields: {
+              likesCount: { $size: { $ifNull: ["$likedBy", []] } },
             },
-            { $sort: { likesCount: -1 } },
-            { $limit: 1 },
-          ])
-          .toArray();
-        if (result.length > 0) {
-          res.send(result[0]);
-        } else {
-          res.send(null);
-        }
-      } catch (error) {
-        res.status(500).send({ error: "Failed to fetch most liked tip." });
+          },
+          { $sort: { likesCount: -1 } },
+          { $limit: 1 },
+        ])
+        .toArray();
+      if (result.length > 0) {
+        res.send(result[0]);
+      } else {
+        res.send(null);
       }
+    });
+
+    app.get("/sortedTips", async (req, res) => {
+      const sortOrder = req.header("sort-order") === "old" ? 1 : -1;
+      const result = await tipsCollection
+        .aggregate([
+          { $match: { status: "Public" } },
+          { $sort: { createdAt: sortOrder } },
+        ])
+        .toArray();
+      res.send(result);
     });
   } finally {
   }
